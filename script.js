@@ -28,6 +28,8 @@ function navigate(pageId) {
     showPage(pageId);
   }
 }
+// Make navigate globally accessible for inline onclick handlers
+window.navigate = navigate;
 
 // Handle nav link clicks
 document.querySelectorAll('.nav-link').forEach(link => {
