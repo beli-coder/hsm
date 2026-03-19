@@ -4,7 +4,8 @@
 ================================================ */
 
 // ---- SPA Navigation ----
-function navigate(pageId) {
+
+function showPage(pageId) {
   // Hide all pages
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // Show target
@@ -18,9 +19,13 @@ function navigate(pageId) {
   document.getElementById('navLinks').classList.remove('open');
   // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Set hash if not already set
+}
+
+function navigate(pageId) {
   if (window.location.hash.replace('#', '') !== pageId) {
     window.location.hash = pageId;
+  } else {
+    showPage(pageId);
   }
 }
 
@@ -38,7 +43,6 @@ document.querySelectorAll('.footer-links a').forEach(link => {
     e.preventDefault();
     const href = link.getAttribute('href').replace('#', '');
     navigate(href);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 });
 
@@ -46,9 +50,9 @@ document.querySelectorAll('.footer-links a').forEach(link => {
         document.addEventListener('DOMContentLoaded', () => {
           const hash = window.location.hash.replace('#', '');
           if (hash && document.getElementById(hash)) {
-            navigate(hash);
+            showPage(hash);
           } else {
-            navigate('home');
+            showPage('home');
           }
         });
 
@@ -56,20 +60,9 @@ document.querySelectorAll('.footer-links a').forEach(link => {
         window.addEventListener('hashchange', () => {
           const hash = window.location.hash.replace('#', '');
           if (hash && document.getElementById(hash)) {
-            // Only show the page, don't set hash again
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            // Show target
-            const target = document.getElementById(hash);
-            if (target) target.classList.add('active');
-            // Update nav links
-            document.querySelectorAll('.nav-link').forEach(link => {
-              link.classList.toggle('active', link.dataset.page === hash);
-            });
-            // Close mobile menu
-            document.getElementById('navLinks').classList.remove('open');
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showPage(hash);
+          } else {
+            showPage('home');
           }
         });
 
