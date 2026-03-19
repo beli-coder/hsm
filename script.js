@@ -48,15 +48,13 @@ document.querySelectorAll('.footer-links a').forEach(link => {
   });
 });
 
-        // Handle initial page load with hash
-        document.addEventListener('DOMContentLoaded', () => {
-          const hash = window.location.hash.replace('#', '');
-          if (hash && document.getElementById(hash)) {
-            showPage(hash);
-          } else {
-            showPage('home');
-          }
-        });
+// Handle initial page load with hash (call directly, not in DOMContentLoaded)
+const hash = window.location.hash.replace('#', '');
+if (hash && document.getElementById(hash)) {
+  showPage(hash);
+} else {
+  showPage('home');
+}
 
         // Handle browser navigation (back/forward/hash changes)
         window.addEventListener('hashchange', () => {
