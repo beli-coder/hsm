@@ -48,6 +48,14 @@ document.querySelectorAll('.nav-link').forEach(link => {
           }
         });
 
+        // Handle browser navigation (back/forward/hash changes)
+        window.addEventListener('hashchange', () => {
+          const hash = window.location.hash.replace('#', '');
+          if (hash && document.getElementById(hash)) {
+            navigate(hash);
+          }
+        });
+
 // Hamburger menu
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
