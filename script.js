@@ -29,14 +29,24 @@ document.querySelectorAll('.nav-link').forEach(link => {
 });
 
 // Footer link clicks
-document.querySelectorAll('.footer-links a').forEach(link => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    const href = link.getAttribute('href').replace('#', '');
-    navigate(href);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-});
+        document.querySelectorAll('.footer-links a').forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const href = link.getAttribute('href').replace('#', '');
+            navigate(href);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+
+        // Handle initial page load with hash
+        document.addEventListener('DOMContentLoaded', () => {
+          const hash = window.location.hash.replace('#', '');
+          if (hash && document.getElementById(hash)) {
+            navigate(hash);
+          } else {
+            navigate('home');
+          }
+        });
 
 // Hamburger menu
 const hamburger = document.getElementById('hamburger');
