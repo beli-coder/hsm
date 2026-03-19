@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>High School Musical — Carolina Friends School</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-logo">
+      <span class="nav-logo-main">HSM</span>
+      <span class="nav-logo-sub">CFS</span>
+    </div>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home" class="nav-link active" data-page="home">Home</a></li>
+      <li><a href="#cast" class="nav-link" data-page="cast">Cast & Crew</a></li>
+      <li><a href="#show" class="nav-link" data-page="show">Show Info</a></li>
+      <li><a href="#gallery" class="nav-link" data-page="gallery">Gallery</a></li>
+      <li><a href="#school" class="nav-link" data-page="school">Our School</a></li>
+      <li><a href="#show" class="nav-cta">Get Tickets</a></li>
+    </ul>
+  </nav>
+
+  <!-- ========== PAGE: HOME ========== -->
+  <section class="page active" id="home">
+    <div class="hero">
+      <div class="hero-bg">
+        <div class="spotlight spotlight-1"></div>
+        <div class="spotlight spotlight-2"></div>
+        <div class="spotlight spotlight-3"></div>
+        <div class="stars" id="stars"></div>
+        <div class="curtain curtain-left"></div>
+        <div class="curtain curtain-right"></div>
+      </div>
+
+      <div class="hero-content">
+        <p class="hero-presents">Carolina Friends School Presents</p>
+        <div class="hero-title-wrap">
+          <h1 class="hero-title">
+            <span class="hero-title-high">HIGH</span>
+            <span class="hero-title-school">SCHOOL</span>
+            <span class="hero-title-musical">MUSICAL</span>
+          </h1>
+          <div class="hero-title-deco">
+            <svg viewBox="0 0 600 30" xmlns="http://www.w3.org/2000/svg">
+              <line x1="0" y1="15" x2="220" y2="15" stroke="#d4a843" stroke-width="1" opacity="0.6"/>
+              <circle cx="300" cy="15" r="8" fill="none" stroke="#d4a843" stroke-width="1"/>
+              <circle cx="300" cy="15" r="3" fill="#d4a843"/>
+              <line x1="380" y1="15" x2="600" y2="15" stroke="#d4a843" stroke-width="1" opacity="0.6"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="hero-details">
+          <div class="hero-detail">
+            <span class="detail-label">Dates</span>
+            <span class="detail-value">April 25 – 27, 2025</span>
+          </div>
+          <div class="hero-divider">✦</div>
+          <div class="hero-detail">
+            <span class="detail-label">Venue</span>
+            <span class="detail-value">CFS Main Stage</span>
+          </div>
+          <div class="hero-divider">✦</div>
+          <div class="hero-detail">
+            <span class="detail-label">Time</span>
+            <span class="detail-value">7:00 PM</span>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a href="#show" class="btn-primary" onclick="navigate('show')">Get Tickets</a>
+          <a href="#cast" class="btn-secondary" onclick="navigate('cast')">Meet the Cast</a>
+        </div>
+      </div>
+
+      <div class="hero-scroll">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </div>
+
+    <!-- Quote / Tagline -->
+    <div class="home-quote">
+      <div class="home-quote-inner">
+        <p class="quote-mark">"</p>
+        <p class="quote-text">We're all in this together.</p>
+        <p class="quote-attr">— East High School, & Carolina Friends School</p>
+      </div>
+    </div>
+
+    <!-- Feature tiles -->
+    <div class="home-features">
+      <div class="feature-tile" onclick="navigate('cast')">
+        <div class="tile-icon">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="20" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 50 Q30 35 50 50" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="12" cy="28" r="7" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+            <circle cx="48" cy="28" r="7" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+          </svg>
+        </div>
+        <h3>Cast & Crew</h3>
+        <p>Meet the talented students bringing East High to life on our stage.</p>
+        <span class="tile-arrow">→</span>
+      </div>
+      <div class="feature-tile" onclick="navigate('show')">
+        <div class="tile-icon">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="10" width="44" height="34" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 20 L52 20" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+            <circle cx="20" cy="15" r="2" fill="currentColor" opacity="0.5"/>
+            <circle cx="30" cy="15" r="2" fill="currentColor" opacity="0.5"/>
+            <path d="M20 30 L40 30 M20 36 L34 36" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M24 48 L36 48 L30 44 Z" fill="currentColor" opacity="0.6"/>
+          </svg>
+        </div>
+        <h3>Show Info</h3>
+        <p>Dates, times, and everything you need to know about attending.</p>
+        <span class="tile-arrow">→</span>
+      </div>
+      <div class="feature-tile" onclick="navigate('gallery')">
+        <div class="tile-icon">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="14" width="32" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="16" cy="23" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M6 32 L18 24 L26 30 L32 26 L38 30" fill="none" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="30" y="22" width="24" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.6"/>
+          </svg>
+        </div>
+        <h3>Gallery</h3>
+        <p>Rehearsal snapshots and behind-the-scenes moments from the production.</p>
+        <span class="tile-arrow">→</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PAGE: CAST & CREW ========== -->
+  <section class="page" id="cast">
+    <div class="page-hero cast-hero">
+      <div class="page-hero-bg"></div>
+      <div class="page-hero-content">
+        <p class="page-eyebrow">The Players</p>
+        <h2 class="page-title">Cast & Crew</h2>
+        <div class="page-title-deco"></div>
+      </div>
+    </div>
+
+    <div class="cast-section">
+      <h3 class="section-label">Principal Cast</h3>
+      <div class="cast-grid">
+        <div class="cast-card">
+          <div class="cast-avatar" style="--hue:220">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="28" r="16" fill="rgba(255,255,255,0.15)"/>
+              <path d="M12 72 Q40 52 68 72" fill="rgba(255,255,255,0.12)"/>
+              <text x="40" y="34" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="18" font-family="Playfair Display">T</text>
+            </svg>
+          </div>
+          <div class="cast-info">
+            <h4 class="cast-name">Troy Bolton</h4>
+            <p class="cast-actor">Played by Alex Rivera</p>
+            <p class="cast-desc">The star athlete with a secret passion for singing who discovers his true calling.</p>
+          </div>
+          <div class="cast-role-tag">Lead</div>
+        </div>
+
+        <div class="cast-card">
+          <div class="cast-avatar" style="--hue:340">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="28" r="16" fill="rgba(255,255,255,0.15)"/>
+              <path d="M12 72 Q40 52 68 72" fill="rgba(255,255,255,0.12)"/>
+              <text x="40" y="34" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="18" font-family="Playfair Display">G</text>
+            </svg>
+          </div>
+          <div class="cast-info">
+            <h4 class="cast-name">Gabriella Montez</h4>
+            <p class="cast-actor">Played by Sofia Chen</p>
+            <p class="cast-desc">The brilliant new girl whose voice and heart captivate an entire school.</p>
+          </div>
+          <div class="cast-role-tag">Lead</div>
+        </div>
+
+        <div class="cast-card">
+          <div class="cast-avatar" style="--hue:45">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="28" r="16" fill="rgba(255,255,255,0.15)"/>
+              <path d="M12 72 Q40 52 68 72" fill="rgba(255,255,255,0.12)"/>
+              <text x="40" y="34" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="18" font-family="Playfair Display">S</text>
+            </svg>
+          </div>
+          <div class="cast-info">
+            <h4 class="cast-name">Sharpay Evans</h4>
+            <p class="cast-actor">Played by Sasha Marks</p>
+            <p class="cast-desc">The drama queen who will stop at nothing to claim the spotlight as her own.</p>
+          </div>
+          <div class="cast-role-tag">Supporting</div>
+        </div>
+
+        <div class="cast-card">
+          <div class="cast-avatar" style="--hue:160">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="28" r="16" fill="rgba(255,255,255,0.15)"/>
+              <path d="M12 72 Q40 52 68 72" fill="rgba(255,255,255,0.12)"/>
+              <text x="40" y="34" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="18" font-family="Playfair Display">R</text>
+            </svg>
+          </div>
+          <div class="cast-info">
+            <h4 class="cast-name">Ryan Evans</h4>
+            <p class="cast-actor">Played by Kalindi Hess</p>
+            <p class="cast-desc">Sharpay's twin and choreographer extraordinaire with hidden depths.</p>
+          </div>
+          <div class="cast-role-tag">Supporting</div>
+        </div>
+
+        <div class="cast-card">
+          <div class="cast-avatar" style="--hue:280">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="28" r="16" fill="rgba(255,255,255,0.15)"/>
+              <path d="M12 72 Q40 52 68 72" fill="rgba(255,255,255,0.12)"/>
+              <text x="40" y="34" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="18" font-family="Playfair Display">Z</text>
+            </svg>
+          </div>
+          <div class="cast-info">
+            <h4 class="cast-name">Zeke Baylor</h4>
+            <p class="cast-actor">Played by Alula</p>
+            <p class="cast-desc">Troy's best friend on the team whose passion for baking surprises everyone.</p>
+          </div>
+          <div class="cast-role-tag">Ensemble</div>
+        </div>
+
+        <div class="cast-card">
+          <div class="cast-avatar" style="--hue:10">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="28" r="16" fill="rgba(255,255,255,0.15)"/>
+              <path d="M12 72 Q40 52 68 72" fill="rgba(255,255,255,0.12)"/>
+              <text x="40" y="34" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="18" font-family="Playfair Display">T</text>
+            </svg>
+          </div>
+          <div class="cast-info">
+            <h4 class="cast-name">Taylor McKessie</h4>
+            <p class="cast-actor">Played by Celia</p>
+            <p class="cast-desc">The academic team captain who warms up to the idea of breaking the status quo.</p>
+          </div>
+          <div class="cast-role-tag">Supporting</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="crew-section">
+      <h3 class="section-label">Production Team</h3>
+      <div class="crew-grid">
+        <div class="crew-item">
+          <span class="crew-role">Director</span>
+          <span class="crew-name">Brittni Addison</span>
+        </div>
+        <div class="crew-item">
+          <span class="crew-role">Musical Director</span>
+          <span class="crew-name">Carter Hodge</span>
+        </div>
+        <div class="crew-item">
+          <span class="crew-role">Choreographer</span>
+          <span class="crew-name">Teagan & Katie</span>
+        </div>
+        <div class="crew-item">
+          <span class="crew-role">Stage Manager</span>
+          <span class="crew-name">Clayton Rasch</span>
+        </div>
+        <div class="crew-item">
+          <span class="crew-role">Set Design</span>
+          <span class="crew-name">CFS Stagecraft Class</span>
+        </div>
+        <div class="crew-item">
+          <span class="crew-role">Costumes</span>
+          <span class="crew-name">Gillian</span>
+        </div>
+        <div class="crew-item">
+          <span class="crew-role">Lighting</span>
+          <span class="crew-name">Kaitlin Rider</span>
+        </div>
+        <div class="crew-item">
+          <span class="crew-role">Sound</span>
+          <span class="crew-name">Joss</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PAGE: SHOW INFO ========== -->
+  <section class="page" id="show">
+    <div class="page-hero show-hero">
+      <div class="page-hero-bg"></div>
+      <div class="page-hero-content">
+        <p class="page-eyebrow">Join Us</p>
+        <h2 class="page-title">Show Info & Tickets</h2>
+        <div class="page-title-deco"></div>
+      </div>
+    </div>
+
+    <div class="show-content">
+      <div class="show-left">
+        <div class="show-dates-card">
+          <h3>Performance Dates</h3>
+          <div class="date-list">
+            <div class="date-item">
+              <div class="date-box">
+                <span class="date-month">APR</span>
+                <span class="date-num">17</span>
+                <span class="date-day">Friday</span>
+              </div>
+              <div class="date-details">
+                <p class="date-time">7:00 PM</p>
+                <p class="date-note">Opening Night ✦ Limited seats</p>
+              </div>
+            </div>
+            <div class="date-item">
+              <div class="date-box">
+                <span class="date-month">APR</span>
+                <span class="date-num">18</span>
+                <span class="date-day">Saturday</span>
+              </div>
+              <div class="date-details">
+                <p class="date-time">2:00 PM & 7:00 PM</p>
+                <p class="date-note">Matinée + Closing</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="venue-card">
+          <h3>Venue</h3>
+          <div class="venue-info">
+            <div class="venue-icon">
+              <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 4 C13 4 8 9 8 16 C8 26 20 36 20 36 C20 36 32 26 32 16 C32 9 27 4 20 4Z" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+                <circle cx="20" cy="16" r="4" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div>
+              <p class="venue-name">CFS PAC</p>
+              <p class="venue-addr">4809 Friends School Rd<br/>Durham, NC 27705</p>
+            </div>
+          </div>
+          <div class="venue-notes">
+            <p>🅿️ Plenty of parking in the main lot</p>
+            <p>♿ Fully accessible venue</p>
+            <p>🚫 No flash photography during performance</p>
+          </div>
+        </div>
+      </div>
+
+                </select>
+              </div>
+            </div>
+            <button class="btn-ticket">RSVP</button>
+            <p class="ticket-note">Questions? Email us at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="365244575b5776555045585518594451">[email&#160;protected]</a></p>
+          </div>
+          <div class="ticket-tear"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PAGE: GALLERY ========== -->
+  <section class="page" id="gallery">
+    <div class="page-hero gallery-hero">
+      <div class="page-hero-bg"></div>
+      <div class="page-hero-content">
+        <p class="page-eyebrow">Behind the Curtain</p>
+        <h2 class="page-title">Gallery</h2>
+        <div class="page-title-deco"></div>
+      </div>
+    </div>
+
+    <div class="gallery-intro">
+      <p>A glimpse into the weeks of rehearsals, set-building, and laughter that brought East High to Carolina Friends School.</p>
+    </div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item tall" style="--accent:#d4a843">
+        <div class="gallery-img">
+          <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="560" fill="#08041a"/>
+            <circle cx="200" cy="180" r="120" fill="rgba(124,58,237,0.08)"/>
+            <ellipse cx="200" cy="420" rx="160" ry="40" fill="rgba(212,168,67,0.05)"/>
+            <path d="M60 0 L40 80 L80 80 Z" fill="rgba(212,168,67,0.3)"/>
+            <path d="M340 0 L320 80 L360 80 Z" fill="rgba(212,168,67,0.3)"/>
+            <circle cx="160" cy="280" r="20" fill="rgba(255,255,255,0.15)"/>
+            <path d="M140 300 Q160 380 180 400" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="30" stroke-linecap="round"/>
+            <circle cx="240" cy="280" r="20" fill="rgba(255,255,255,0.15)"/>
+            <path d="M220 300 Q240 380 260 400" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="30" stroke-linecap="round"/>
+            <text x="120" y="240" fill="rgba(212,168,67,0.7)" font-size="28">♪</text>
+            <text x="260" y="220" fill="rgba(124,58,237,0.6)" font-size="20">♫</text>
+          </svg>
+        </div>
+        <div class="gallery-caption">Opening Night Rehearsal</div>
+      </div>
+
+      <div class="gallery-item" style="--accent:#7c3aed">
+        <div class="gallery-img">
+          <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="280" fill="#0a0418"/>
+            <rect x="0" y="200" width="400" height="80" fill="rgba(124,58,237,0.1)"/>
+            <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(124,58,237,0.4)" stroke-width="1"/>
+            <line x1="0" y1="220" x2="400" y2="220" stroke="rgba(124,58,237,0.2)" stroke-width="1"/>
+            <rect x="50" y="50" width="300" height="140" rx="4" fill="rgba(124,58,237,0.07)" stroke="rgba(124,58,237,0.3)" stroke-width="1"/>
+            <text x="200" y="130" text-anchor="middle" fill="rgba(212,168,67,0.7)" font-size="40" font-family="Bebas Neue">EAST HIGH</text>
+            <text x="200" y="155" text-anchor="middle" fill="rgba(124,58,237,0.5)" font-size="14">WILDCATS</text>
+          </svg>
+        </div>
+        <div class="gallery-caption">Set Construction — East High Gym</div>
+      </div>
+
+      <div class="gallery-item" style="--accent:#a855f7">
+        <div class="gallery-img">
+          <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="280" fill="#0c0418"/>
+            <line x1="60" y1="80" x2="340" y2="80" stroke="rgba(168,85,247,0.4)" stroke-width="3"/>
+            <g opacity="0.7">
+              <path d="M100 80 L100 160 Q90 190 80 200 L120 200 Q110 190 100 160" fill="rgba(168,85,247,0.3)" stroke="rgba(168,85,247,0.5)" stroke-width="1"/>
+              <path d="M160 80 L160 160 Q145 195 130 210 L190 210 Q175 195 160 160" fill="rgba(212,168,67,0.3)" stroke="rgba(212,168,67,0.5)" stroke-width="1"/>
+              <path d="M220 80 L220 160 Q205 195 190 210 L250 210 Q235 195 220 160" fill="rgba(124,58,237,0.3)" stroke="rgba(124,58,237,0.5)" stroke-width="1"/>
+              <path d="M280 80 L280 160 Q265 190 255 200 L305 200 Q295 190 280 160" fill="rgba(168,85,247,0.2)" stroke="rgba(168,85,247,0.4)" stroke-width="1"/>
+            </g>
+            <text x="200" y="250" text-anchor="middle" fill="rgba(168,85,247,0.5)" font-size="12" font-family="Montserrat">WARDROBE DEPT.</text>
+          </svg>
+        </div>
+        <div class="gallery-caption">Costume Fitting Day</div>
+      </div>
+
+      <div class="gallery-item wide" style="--accent:#d4a843">
+        <div class="gallery-img">
+          <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg">
+            <rect width="760" height="280" fill="#06040e"/>
+            <rect x="0" y="180" width="760" height="100" fill="rgba(212,168,67,0.04)"/>
+            <path d="M100 0 L20 180 L180 180 Z" fill="rgba(124,58,237,0.08)"/>
+            <path d="M380 0 L300 180 L460 180 Z" fill="rgba(212,168,67,0.08)"/>
+            <path d="M660 0 L580 180 L740 180 Z" fill="rgba(124,58,237,0.06)"/>
+            <g fill="rgba(255,255,255,0.12)">
+              <circle cx="160" cy="148" r="12"/><rect x="152" y="160" width="16" height="20" rx="2"/>
+              <circle cx="220" cy="145" r="12"/><rect x="212" y="157" width="16" height="20" rx="2"/>
+              <circle cx="300" cy="150" r="14"/><rect x="290" y="164" width="20" height="22" rx="2"/>
+              <circle cx="380" cy="142" r="14"/><rect x="370" y="156" width="20" height="22" rx="2"/>
+              <circle cx="460" cy="148" r="12"/><rect x="452" y="160" width="16" height="20" rx="2"/>
+              <circle cx="540" cy="145" r="12"/><rect x="532" y="157" width="16" height="20" rx="2"/>
+              <circle cx="600" cy="150" r="12"/><rect x="592" y="162" width="16" height="20" rx="2"/>
+            </g>
+            <text x="380" y="260" text-anchor="middle" fill="rgba(212,168,67,0.35)" font-size="11" font-family="Montserrat" letter-spacing="3">FULL ENSEMBLE — WE'RE ALL IN THIS TOGETHER</text>
+          </svg>
+        </div>
+        <div class="gallery-caption">Full Ensemble — "We're All In This Together"</div>
+      </div>
+
+      <div class="gallery-item" style="--accent:#7c3aed">
+        <div class="gallery-img">
+          <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="280" fill="#05020f"/>
+            <rect x="60" y="160" width="280" height="80" rx="4" fill="rgba(124,58,237,0.1)" stroke="rgba(124,58,237,0.3)" stroke-width="1"/>
+            <g fill="rgba(255,255,255,0.6)">
+              <rect x="70" y="165" width="18" height="50" rx="2"/>
+              <rect x="92" y="165" width="18" height="50" rx="2"/>
+              <rect x="114" y="165" width="18" height="50" rx="2"/>
+              <rect x="136" y="165" width="18" height="50" rx="2"/>
+              <rect x="158" y="165" width="18" height="50" rx="2"/>
+              <rect x="180" y="165" width="18" height="50" rx="2"/>
+              <rect x="202" y="165" width="18" height="50" rx="2"/>
+              <rect x="224" y="165" width="18" height="50" rx="2"/>
+              <rect x="246" y="165" width="18" height="50" rx="2"/>
+              <rect x="268" y="165" width="18" height="50" rx="2"/>
+              <rect x="290" y="165" width="18" height="50" rx="2"/>
+              <rect x="312" y="165" width="18" height="50" rx="2"/>
+            </g>
+            <g fill="rgba(0,0,0,0.8)">
+              <rect x="83" y="165" width="12" height="32" rx="1"/>
+              <rect x="127" y="165" width="12" height="32" rx="1"/>
+              <rect x="193" y="165" width="12" height="32" rx="1"/>
+              <rect x="215" y="165" width="12" height="32" rx="1"/>
+              <rect x="237" y="165" width="12" height="32" rx="1"/>
+            </g>
+            <g stroke="rgba(212,168,67,0.35)" stroke-width="1">
+              <line x1="80" y1="80" x2="320" y2="80"/>
+              <line x1="80" y1="95" x2="320" y2="95"/>
+              <line x1="80" y1="110" x2="320" y2="110"/>
+              <line x1="80" y1="125" x2="320" y2="125"/>
+              <line x1="80" y1="140" x2="320" y2="140"/>
+            </g>
+            <text x="100" y="77" fill="rgba(212,168,67,0.7)" font-size="22">𝄞</text>
+            <g fill="rgba(124,58,237,0.6)">
+              <circle cx="150" cy="107" r="5"/>
+              <circle cx="175" cy="95" r="5"/>
+              <circle cx="200" cy="110" r="5"/>
+              <circle cx="225" cy="95" r="5"/>
+              <circle cx="250" cy="80" r="5"/>
+              <circle cx="275" cy="107" r="5"/>
+            </g>
+          </svg>
+        </div>
+        <div class="gallery-caption">Musical Direction — Band Rehearsal</div>
+      </div>
+
+      <div class="gallery-item" style="--accent:#d4a843">
+        <div class="gallery-img">
+          <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+            <rect width="400" height="280" fill="#080415"/>
+            <path d="M200 0 L120 280 L280 280 Z" fill="rgba(212,168,67,0.06)"/>
+            <circle cx="200" cy="120" r="60" fill="rgba(124,58,237,0.07)"/>
+            <circle cx="200" cy="110" r="18" fill="rgba(255,255,255,0.18)"/>
+            <path d="M178 128 Q200 200 222 128" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.15)" stroke-width="28" stroke-linecap="round"/>
+            <rect x="196" y="145" width="8" height="30" rx="2" fill="rgba(212,168,67,0.6)"/>
+            <ellipse cx="200" cy="145" rx="7" ry="10" fill="rgba(212,168,67,0.5)"/>
+            <text x="80" y="60" fill="rgba(212,168,67,0.4)" font-size="16">✦</text>
+            <text x="300" y="80" fill="rgba(124,58,237,0.4)" font-size="12">✦</text>
+            <text x="140" y="200" fill="rgba(212,168,67,0.2)" font-size="20">✦</text>
+          </svg>
+        </div>
+        <div class="gallery-caption">Solo Spotlight — "Start of Something New"</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PAGE: SCHOOL ========== -->
+  <section class="page" id="school">
+    <div class="page-hero school-hero">
+      <div class="page-hero-bg"></div>
+      <div class="page-hero-content">
+        <p class="page-eyebrow">Our Community</p>
+        <h2 class="page-title">Carolina Friends School</h2>
+        <div class="page-title-deco"></div>
+      </div>
+    </div>
+
+    <div class="school-content">
+      <div class="school-intro">
+        <div class="school-intro-text">
+          <h3>Where Every Voice Matters</h3>
+          <p>Carolina Friends School is a Quaker independent school in Durham, NC, serving students from preschool through 12th grade. Grounded in the values of integrity, community, equality, and peace, CFS nurtures curious minds and generous spirits.</p>
+          <p>Our arts program is central to our mission — giving every student a stage, a voice, and a community that cheers them on. The annual musical production is a beloved tradition that unites the entire CFS family.</p>
+        </div>
+        <div class="school-emblem">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shield shape -->
+            <path d="M100 20 L170 50 L170 120 Q170 170 100 185 Q30 170 30 120 L30 50 Z" fill="none" stroke="#d4a843" stroke-width="1.5" opacity="0.6"/>
+            <!-- Inner shield -->
+            <path d="M100 35 L155 60 L155 115 Q155 155 100 168 Q45 155 45 115 L45 60 Z" fill="none" stroke="#7c3aed" stroke-width="0.8" opacity="0.5"/>
+            <!-- Star in center -->
+            <text x="100" y="115" text-anchor="middle" fill="#d4a843" font-size="40" opacity="0.7">✦</text>
+            <!-- CFS text -->
+            <text x="100" y="80" text-anchor="middle" fill="#d4a843" font-size="22" font-family="Bebas Neue" letter-spacing="4" opacity="0.9">CFS</text>
+            <text x="100" y="148" text-anchor="middle" fill="#7c3aed" font-size="8" font-family="Montserrat" letter-spacing="3" opacity="0.8">EST. 1962</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="school-values">
+        <h3 class="section-label">Our Values</h3>
+        <div class="values-grid">
+          <div class="value-card">
+            <div class="value-icon">✦</div>
+            <h4>Integrity</h4>
+            <p>We act with honesty and hold ourselves to high standards in all we do — on stage and off.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">◈</div>
+            <h4>Community</h4>
+            <p>Theater is the ultimate community art. Every role, from lead to crew, is essential.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">⬡</div>
+            <h4>Equality</h4>
+            <p>Every student has a voice worth hearing. Our stage belongs to all.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">○</div>
+            <h4>Peace</h4>
+            <p>We resolve conflict through creativity and compassion — the CFS way.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="school-facts">
+        <div class="fact-item">
+          <span class="fact-num">62+</span>
+          <span class="fact-label">Years of Education</span>
+        </div>
+        <div class="fact-divider"></div>
+        <div class="fact-item">
+          <span class="fact-num">K–12</span>
+          <span class="fact-label">Grades Served</span>
+        </div>
+        <div class="fact-divider"></div>
+        <div class="fact-item">
+          <span class="fact-num">Durham</span>
+          <span class="fact-label">North Carolina</span>
+        </div>
+        <div class="fact-divider"></div>
+        <div class="fact-item">
+          <span class="fact-num">Quaker</span>
+          <span class="fact-label">Tradition</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <span>HIGH SCHOOL MUSICAL</span>
+        <span class="footer-sub">Carolina Friends School · Durham, NC</span>
+      </div>
+      <div class="footer-links">
+        <a href="#home" onclick="navigate('home')">Home</a>
+        <a href="#cast" onclick="navigate('cast')">Cast</a>
+        <a href="#show" onclick="navigate('show')">Tickets</a>
+        <a href="#gallery" onclick="navigate('gallery')">Gallery</a>
+        <a href="#school" onclick="navigate('school')">School</a>
+      </div>
+      <p class="footer-copy">© 2025 Carolina Friends School D
+
