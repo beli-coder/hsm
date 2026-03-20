@@ -3,6 +3,31 @@
    JavaScript: SPA Navigation + Effects
 ================================================ */
 
+
+// Handle initial page load with hash (call directly, not in DOMContentLoaded)
+function showPage(pageId) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Show target
+  const target = document.getElementById(pageId);
+  if (target) target.classList.add('active');
+  // Update nav links
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.toggle('active', link.dataset.page === pageId);
+  });
+  // Close mobile menu
+  document.getElementById('navLinks').classList.remove('open');
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const hash = window.location.hash.replace('#', '');
+if (hash && document.getElementById(hash)) {
+  showPage(hash);
+} else {
+  showPage('home');
+}
+
 // ---- SPA Navigation ----
 
 function showPage(pageId) {
