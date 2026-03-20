@@ -4,7 +4,7 @@
 ================================================ */
 
 
-// Handle initial page load with hash (call directly, not in DOMContentLoaded)
+
 function showPage(pageId) {
   // Hide all pages
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -21,12 +21,15 @@ function showPage(pageId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-const hash = window.location.hash.replace('#', '');
-if (hash && document.getElementById(hash)) {
-  showPage(hash);
-} else {
-  showPage('home');
-}
+// Initial navigation (run once, at top)
+(function() {
+  const hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    showPage(hash);
+  } else {
+    showPage('home');
+  }
+})();
 
 // ---- SPA Navigation ----
 
@@ -46,14 +49,16 @@ function showPage(pageId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+
 function navigate(pageId) {
+  // Only update hash if it's not already set
   if (window.location.hash.replace('#', '') !== pageId) {
+    // This will trigger hashchange, which will call showPage
     window.location.hash = pageId;
   } else {
     showPage(pageId);
   }
 }
-// Make navigate globally accessible for inline onclick handlers
 window.navigate = navigate;
 
 // Handle nav link clicks
@@ -73,23 +78,15 @@ document.querySelectorAll('.footer-links a').forEach(link => {
   });
 });
 
-// Handle initial page load with hash (call directly, not in DOMContentLoaded)
-const hash = window.location.hash.replace('#', '');
-if (hash && document.getElementById(hash)) {
-  showPage(hash);
-} else {
-  showPage('home');
-}
-
-        // Handle browser navigation (back/forward/hash changes)
-        window.addEventListener('hashchange', () => {
-          const hash = window.location.hash.replace('#', '');
-          if (hash && document.getElementById(hash)) {
-            showPage(hash);
-          } else {
-            showPage('home');
-          }
-        });
+// Handle browser navigation (back/forward/hash changes)
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#', '');
+  if (hash && document.getElementById(hash)) {
+    showPage(hash);
+  } else {
+    showPage('home');
+  }
+});
 
 // Hamburger menu
 const hamburger = document.getElementById('hamburger');
@@ -167,23 +164,7 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// ---- Ticket form handler ----
-const ticketBtn = document.querySelector('.btn-ticket');
-if (ticketBtn) {
-  ticketBtn.addEventListener('click', () => {
-    const name = document.querySelector('.ticket-form input[type="text"]')?.value.trim();
-    const email = document.querySelector('.ticket-form input[type="email"]')?.value.trim();
-    if (!name || !email) {
-      showToast('Please fill in your name and email.', 'warn');
-      return;
-    }
-    if (!email.includes('@')) {
-      showToast('Please enter a valid email address.', 'warn');
-      return;
-    }
-    showToast(`🎭 Reserved! Confirmation sent to ${email}`, 'success');
-  });
-}
+
 
 // ---- Toast notification ----
 function showToast(message, type = 'success') {
