@@ -32,8 +32,9 @@ function showPage(pageId) {
     navLinks.classList.remove('open');
   }
 
-  // Scroll to top
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Scroll to top. Use 'instant' to avoid competing with the browser's own
+  // smooth-scroll-to-anchor triggered by html { scroll-behavior: smooth }.
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 // ---- Routing Logic ----
@@ -48,11 +49,22 @@ function handleRouting() {
 // Listen for browser back/forward and link clicks
 window.addEventListener('hashchange', handleRouting);
 
-// Initialize on first load
-window.addEventListener('DOMContentLoaded', function() {
+// Initialize on first load.
+// Guard against Cloudflare Rocket Loader (and async/defer loading) which can
+// fire DOMContentLoaded before this script executes, causing the listener to
+// never run and leaving every page stuck on the default #home section.
+function init() {
   handleRouting();
-  createStars(); // Initialize visual effects
-});
+  createStars();
+}
+
+if (document.readyState === 'loading') {
+  // HTML not yet fully parsed — wait for DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  // DOM is already ready (script was deferred/async by Rocket Loader or similar)
+  init();
+}
 
 // Hamburger menu toggle
 var hamburger = document.getElementById('hamburger');
