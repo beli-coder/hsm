@@ -176,12 +176,18 @@ function applyCMSContent(c) {
       castGrid.innerHTML = c.cast.map(function(m) {
         var initial = (m.character || '?')[0].toUpperCase();
         var hue = m.hue || 200;
+        var avatarContent;
+        if (m.photoUrl) {
+          avatarContent = '<img src="' + escAttr(m.photoUrl) + '" alt="' + escAttr(m.character) + '" style="width:100%;height:100%;object-fit:cover" />';
+        } else {
+          avatarContent = '<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">'
+            + '<circle cx="40" cy="28" r="16" fill="rgba(255,255,255,0.15)"/>'
+            + '<text x="40" y="34" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="18">' + esc(initial) + '</text>'
+            + '</svg>';
+        }
         return '<div class="cast-card">'
           + '<div class="cast-avatar" style="--hue:' + hue + '">'
-          + '<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">'
-          + '<circle cx="40" cy="28" r="16" fill="rgba(255,255,255,0.15)"/>'
-          + '<text x="40" y="34" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="18">' + esc(initial) + '</text>'
-          + '</svg></div>'
+          + avatarContent + '</div>'
           + '<div class="cast-info">'
           + '<h4 class="cast-name">' + esc(m.character) + '</h4>'
           + '<p class="cast-actor">' + esc(m.actor) + '</p>'

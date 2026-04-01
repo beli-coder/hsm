@@ -384,16 +384,16 @@ const defaultContent = {
   hero: { presents: 'Carolina Friends School Presents', dates: 'April 25 – 27, 2025', venue: 'CFS Main Stage', time: '7:00 PM' },
   quote: { text: "We're all in this together.", attribution: '— East High School, & Carolina Friends School' },
   cast: [
-    { id: '1', character: 'Troy Bolton', actor: 'Alex Rivera', description: 'The basketball captain who discovers an unexpected love for singing and must choose between two worlds.', role: 'Lead', hue: 220 },
-    { id: '2', character: 'Gabriella Montez', actor: 'Sofia Chen', description: 'The brilliant new girl whose voice and heart captivate an entire school.', role: 'Lead', hue: 340 },
-    { id: '3', character: 'Sharpay Evans', actor: 'Sasha Marks', description: 'The drama queen who will stop at nothing to claim the spotlight as her own.', role: 'Supporting', hue: 45 },
-    { id: '4', character: 'Ryan Evans', actor: 'Kalindi Hess', description: "Sharpay's twin and choreographer extraordinaire with hidden depths.", role: 'Supporting', hue: 160 },
-    { id: '5', character: 'Chad Danforth', actor: 'Marcus Williams', description: "Troy's fiercely loyal best friend who believes basketball is the only game worth playing — until it isn't.", role: 'Supporting', hue: 30 },
-    { id: '6', character: 'Taylor McKessie', actor: 'Celia', description: 'The academic team captain who warms up to the idea of breaking the status quo.', role: 'Supporting', hue: 10 },
-    { id: '7', character: 'Kelsi Nielsen', actor: 'Emma Torres', description: 'The shy but talented pianist and composer behind every song, finally finding her voice.', role: 'Supporting', hue: 260 },
-    { id: '8', character: 'Zeke Baylor', actor: 'Alula', description: "Troy's best friend on the team whose passion for baking surprises everyone.", role: 'Ensemble', hue: 280 },
-    { id: '9', character: 'Ms. Darbus', actor: 'Lily Nguyen', description: "East High's formidable drama teacher, uncompromising director, and unexpected champion of the arts.", role: 'Supporting', hue: 280 },
-    { id: '10', character: 'Coach Bolton', actor: 'Devon Harris', description: "Troy's dad, head basketball coach, and a man slowly learning that winning isn't everything.", role: 'Supporting', hue: 200 },
+    { id: '1', character: 'Troy Bolton', actor: 'Alex Rivera', description: 'The basketball captain who discovers an unexpected love for singing and must choose between two worlds.', role: 'Lead', hue: 220, photoUrl: '' },
+    { id: '2', character: 'Gabriella Montez', actor: 'Sofia Chen', description: 'The brilliant new girl whose voice and heart captivate an entire school.', role: 'Lead', hue: 340, photoUrl: '' },
+    { id: '3', character: 'Sharpay Evans', actor: 'Sasha Marks', description: 'The drama queen who will stop at nothing to claim the spotlight as her own.', role: 'Supporting', hue: 45, photoUrl: '' },
+    { id: '4', character: 'Ryan Evans', actor: 'Kalindi Hess', description: "Sharpay's twin and choreographer extraordinaire with hidden depths.", role: 'Supporting', hue: 160, photoUrl: '' },
+    { id: '5', character: 'Chad Danforth', actor: 'Marcus Williams', description: "Troy's fiercely loyal best friend who believes basketball is the only game worth playing — until it isn't.", role: 'Supporting', hue: 30, photoUrl: '' },
+    { id: '6', character: 'Taylor McKessie', actor: 'Celia', description: 'The academic team captain who warms up to the idea of breaking the status quo.', role: 'Supporting', hue: 10, photoUrl: '' },
+    { id: '7', character: 'Kelsi Nielsen', actor: 'Emma Torres', description: 'The shy but talented pianist and composer behind every song, finally finding her voice.', role: 'Supporting', hue: 260, photoUrl: '' },
+    { id: '8', character: 'Zeke Baylor', actor: 'Alula', description: "Troy's best friend on the team whose passion for baking surprises everyone.", role: 'Ensemble', hue: 280, photoUrl: '' },
+    { id: '9', character: 'Ms. Darbus', actor: 'Lily Nguyen', description: "East High's formidable drama teacher, uncompromising director, and unexpected champion of the arts.", role: 'Supporting', hue: 280, photoUrl: '' },
+    { id: '10', character: 'Coach Bolton', actor: 'Devon Harris', description: "Troy's dad, head basketball coach, and a man slowly learning that winning isn't everything.", role: 'Supporting', hue: 200, photoUrl: '' },
   ],
   crew: [
     { id: '1', role: 'Director', name: 'Ms. Sarah Whitmore' },
@@ -605,7 +605,7 @@ function renderDynamicLists() {
 }
 
 function collectDynamicLists() {
-  collectListFromDOM('castList', 'cast', ['character', 'actor', 'description', 'role', 'hue']);
+  collectListFromDOM('castList', 'cast', ['character', 'actor', 'description', 'role', 'hue', 'photoUrl']);
   collectListFromDOM('crewList', 'crew', ['role', 'name']);
   collectListFromDOM('performanceList', 'show.performances', ['month', 'day', 'weekday', 'time', 'note']);
   collectListFromDOM('pricingList', 'show.pricing', ['label', 'amount', 'highlight']);
@@ -638,6 +638,9 @@ function renderCast() {
   const list = document.getElementById('castList');
   list.innerHTML = '';
   (siteContent.cast || []).forEach((c, i) => {
+    const photoPreview = c.photoUrl
+      ? `<div style="margin-top:8px"><img src="${escAttr(c.photoUrl)}" alt="" style="max-height:80px;max-width:80px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" /></div>`
+      : '';
     list.innerHTML += `<div class="item-entry">
       <div class="item-header"><strong>${escHtml(c.character || 'New Character')}</strong>
         <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removeCast(${i})">Remove</button></div>
@@ -651,11 +654,69 @@ function renderCast() {
         <div class="field"><label>Role Tag (Lead / Supporting)</label><input type="text" data-field="role" value="${escAttr(c.role)}" /></div>
         <div class="field"><label>Color Hue (0-360)</label><input type="number" data-field="hue" value="${c.hue || 200}" min="0" max="360" /></div>
       </div>
+      <div class="field">
+        <label>Cast Photo</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" data-field="photoUrl" value="${escAttr(c.photoUrl || '')}" placeholder="Paste image URL or upload →" style="flex:1"
+            oninput="updateCastPhotoPreview(this)" />
+          <button class="btn btn-outline btn-sm" type="button" onclick="triggerCastPhotoUpload(${i})">Upload</button>
+        </div>
+        <input type="file" accept="image/*" style="display:none" data-cast-upload="${i}"
+          onchange="handleCastPhotoFile(${i}, this)" />
+        <p class="help">Upload a photo or paste a URL. Displayed as the actor avatar on the Cast &amp; Crew page.</p>
+        ${photoPreview}
+      </div>
     </div>`;
   });
 }
-function addCastMember() { siteContent.cast.push({ id: String(Date.now()), character: '', actor: '', description: '', role: 'Supporting', hue: Math.floor(Math.random()*360) }); renderCast(); }
+function addCastMember() { siteContent.cast.push({ id: String(Date.now()), character: '', actor: '', description: '', role: 'Supporting', hue: Math.floor(Math.random()*360), photoUrl: '' }); renderCast(); }
 function removeCast(i) { siteContent.cast.splice(i, 1); renderCast(); }
+
+function triggerCastPhotoUpload(idx) {
+  const input = document.querySelector(`[data-cast-upload="${idx}"]`);
+  if (input) input.click();
+}
+
+function updateCastPhotoPreview(urlInput) {
+  const entry = urlInput.closest('.item-entry');
+  let preview = entry.querySelector('.cast-photo-preview');
+  const url = urlInput.value.trim();
+  if (url) {
+    if (!preview) {
+      preview = document.createElement('div');
+      preview.className = 'cast-photo-preview';
+      preview.style.cssText = 'margin-top:8px';
+      urlInput.closest('.field').appendChild(preview);
+    }
+    preview.innerHTML = `<img src="${escAttr(url)}" alt="" style="max-height:80px;max-width:80px;border-radius:50%;object-fit:cover;border:1px solid var(--border)" />`;
+  } else if (preview) {
+    preview.remove();
+  }
+}
+
+async function handleCastPhotoFile(idx, input) {
+  if (!input.files.length) return;
+  const file = input.files[0];
+  if (file.size > 2 * 1024 * 1024) { showToast('File too large (max 2MB)', 'error'); return; }
+  const formData = new FormData();
+  formData.append('file', file);
+  showToast('Uploading photo…');
+  try {
+    const res = await fetch('/api/media', { method: 'POST', credentials: 'same-origin', body: formData });
+    const data = await res.json();
+    if (res.ok) {
+      const url = data.url;
+      // Set into siteContent and re-render so the preview appears
+      siteContent.cast[idx].photoUrl = url;
+      renderCast();
+      showToast('Photo uploaded!', 'success');
+    } else {
+      showToast(data.error || 'Upload failed', 'error');
+    }
+  } catch {
+    showToast('Upload error', 'error');
+  }
+}
 
 // --- Crew ---
 function renderCrew() {
