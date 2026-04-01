@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CMS Admin — HSM CFS</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #d4a843; --gold-light: #f0cc70; --gold-dim: rgba(212,168,67,0.18);
+      --bg: #0a0715; --surface: #100d1c; --surface2: #181428; --border: #1e1a30;
+      --text: #f0eaff; --text-muted: #9080b0; --red: #c8274a; --green: #34d399;
+      --ff: 'Segoe UI', system-ui, sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--ff); font-size: 14px; line-height: 1.6; }
+    a { color: var(--gold); text-decoration: none; }
+
+    /* ---- Login Screen ---- */
+    .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    .login-box { background: var(--surface); border: 1px solid var(--border); padding: 48px 40px; width: 100%; max-width: 400px; }
+    .login-box h1 { font-size: 24px; color: var(--gold); margin-bottom: 8px; letter-spacing: 2px; }
+    .login-box p { color: var(--text-muted); font-size: 13px; margin-bottom: 28px; }
+    .login-box .error { color: var(--red); font-size: 13px; margin-bottom: 12px; display: none; }
+
+    /* ---- Form Controls ---- */
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+    .field input, .field select, .field textarea {
+      width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 10px 14px; font-size: 14px; font-family: var(--ff); outline: none; transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
+    .field textarea { min-height: 80px; resize: vertical; }
+    .field .help { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+    .btn { display: inline-block; padding: 10px 24px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+      font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; font-family: var(--ff); }
+    .btn-gold { background: var(--gold); color: #06040e; }
+    .btn-gold:hover { background: var(--gold-light); }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-danger { background: transparent; border: 1px solid var(--red); color: var(--red); }
+    .btn-danger:hover { background: var(--red); color: white; }
+    .btn-sm { padding: 6px 14px; font-size: 11px; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ---- Layout ---- */
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; z-index: 50; }
+    .sidebar-header { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .sidebar-header h2 { font-size: 16px; color: var(--gold); letter-spacing: 3px; }
+    .sidebar-header span { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+    .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+    .sidebar-nav button {
+      display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 24px;
+      background: none; border: none; color: var(--text-muted); font-size: 13px;
+      font-family: var(--ff); cursor: pointer; text-align: left; transition: all 0.2s;
+    }
+    .sidebar-nav button:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .sidebar-nav button.active { color: var(--gold); background: var(--gold-dim); border-right: 2px solid var(--gold); }
+    .sidebar-nav button .icon { width: 18px; text-align: center; opacity: 0.7; }
+    .sidebar-footer { padding: 16px 24px; border-top: 1px solid var(--border); }
+    .sidebar-footer button { width: 100%; }
+
+    .main { flex: 1; margin-left: 240px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 40; }
+    .topbar h3 { font-size: 16px; font-weight: 600; }
+    .topbar-actions { display: flex; gap: 12px; align-items: center; }
+    .save-status { font-size: 12px; color: var(--text-muted); }
+
+    .content-area { padding: 32px; max-width: 900px; }
+    .section-panel { display: none; }
+    .section-panel.active { display: block; }
+
+    /* ---- Cards & Lists ---- */
+    .card { background: var(--surface); border: 1px solid var(--border); padding: 24px; margin-bottom: 16px; }
+    .card h4 { font-size: 14px; margin-bottom: 16px; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+    .card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .item-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .item-entry { background: var(--surface2); border: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+    .item-entry .item-header { display: flex; justify-content: space-between; align-items: center; }
+    .item-entry .item-header strong { color: var(--text); font-size: 14px; }
+    .item-actions { display: flex; gap: 8px; }
+
+    /* ---- Media Grid ---- */
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .media-item { position: relative; background: var(--surface2); border: 1px solid var(--border); overflow: hidden; cursor: pointer; aspect-ratio: 1; }
+    .media-item img { width: 100%; height: 100%; object-fit: cover; }
+    .media-item .media-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center;
+      justify-content: center; opacity: 0; transition: opacity 0.2s;
+    }
+    .media-item:hover .media-overlay { opacity: 1; }
+    .media-item .media-name { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 8px; background: rgba(0,0,0,0.8); font-size: 10px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .upload-zone {
+      border: 2px dashed var(--border); padding: 32px; text-align: center; color: var(--text-muted);
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--gold); color: var(--gold); }
+    .upload-zone p { margin-bottom: 8px; }
+
+    /* ---- Toast ---- */
+    .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 24px; background: var(--gold); color: #06040e;
+      font-size: 13px; font-weight: 600; z-index: 999; opacity: 0; transform: translateY(10px);
+      transition: all 0.3s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { background: var(--red); color: white; }
+    .toast.success { background: var(--green); color: #06040e; }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .sidebar { width: 200px; }
+      .main { margin-left: 200px; }
+      .card-row { grid-template-columns: 1fr; }
+      .content-area { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-box">
+    <h1>HSM CMS</h1>
+    <p>Sign in to manage site content</p>
+    <div id="loginError" class="error"></div>
+    <div class="field">
+      <label for="loginUser">Username</label>
+      <input type="text" id="loginUser" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label for="loginPass">Password</label>
+      <input type="password" id="loginPass" autocomplete="current-password" />
+    </div>
+    <button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- ===== ADMIN DASHBOARD ===== -->
+<div id="adminDashboard" class="admin-layout" style="display:none">
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>HSM CMS</h2>
+      <span>Content Manager</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <button class="active" data-section="hero"><span class="icon">🏠</span> Home / Hero</button>
+      <button data-section="cast"><span class="icon">🎭</span> Cast</button>
+      <button data-section="crew"><span class="icon">🎬</span> Crew</button>
+      <button data-section="show"><span class="icon">🎟️</span> Show Info</button>
+      <button data-section="gallery"><span class="icon">🖼️</span> Gallery</button>
+      <button data-section="videos"><span class="icon">📹</span> Videos</button>
+      <button data-section="school"><span class="icon">🏫</span> School</button>
+      <button data-section="footer"><span class="icon">📄</span> Footer</button>
+      <button data-section="media"><span class="icon">📁</span> Media Library</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">Sign Out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <h3 id="sectionTitle">Home / Hero</h3>
+      <div class="topbar-actions">
+        <span class="save-status" id="saveStatus"></span>
+        <button class="btn btn-gold" onclick="saveAll()">💾 Save Changes</button>
+        <a href="/" target="_blank" class="btn btn-outline btn-sm">View Site ↗</a>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- ===== HERO SECTION ===== -->
+      <div class="section-panel active" id="panel-hero">
+        <div class="card">
+          <h4>Hero Banner</h4>
+          <div class="field">
+            <label>Presents Line</label>
+            <input type="text" data-bind="hero.presents" />
+          </div>
+          <div class="card-row">
+            <div class="field">
+              <label>Show Dates</label>
+              <input type="text" data-bind="hero.dates" />
+            </div>
+            <div class="field">
+              <label>Venue Name</label>
+              <input type="text" data-bind="hero.venue" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Show Time</label>
+            <input type="text" data-bind="hero.time" />
+          </div>
+        </div>
+        <div class="card">
+          <h4>Quote</h4>
+          <div class="field">
+            <label>Quote Text</label>
+            <input type="text" data-bind="quote.text" />
+          </div>
+          <div class="field">
+            <label>Attribution</label>
+            <input type="text" data-bind="quote.attribution" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CAST SECTION ===== -->
+      <div class="section-panel" id="panel-cast">
+        <div class="card">
+          <h4>Cast Members</h4>
+          <div class="item-list" id="castList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addCastMember()">+ Add Cast Member</button>
+        </div>
+      </div>
+
+      <!-- ===== CREW SECTION ===== -->
+      <div class="section-panel" id="panel-crew">
+        <div class="card">
+          <h4>Production Team</h4>
+          <div class="item-list" id="crewList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addCrewMember()">+ Add Crew Member</button>
+        </div>
+      </div>
+
+      <!-- ===== SHOW INFO SECTION ===== -->
+      <div class="section-panel" id="panel-show">
+        <div class="card">
+          <h4>Performance Dates</h4>
+          <div class="item-list" id="performanceList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addPerformance()">+ Add Performance</button>
+        </div>
+        <div class="card">
+          <h4>Venue</h4>
+          <div class="field">
+            <label>Venue Name</label>
+            <input type="text" data-bind="show.venue.name" />
+          </div>
+          <div class="field">
+            <label>Address</label>
+            <input type="text" data-bind="show.venue.address" />
+          </div>
+        </div>
+        <div class="card">
+          <h4>Pricing</h4>
+          <div class="item-list" id="pricingList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addPricing()">+ Add Price Tier</button>
+        </div>
+        <div class="card">
+          <h4>RSVP Options</h4>
+          <div class="item-list" id="rsvpList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addRsvpOption()">+ Add RSVP Option</button>
+          <div class="field" style="margin-top:16px">
+            <label>Ticket Note</label>
+            <input type="text" data-bind="show.note" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== GALLERY SECTION ===== -->
+      <div class="section-panel" id="panel-gallery">
+        <div class="card">
+          <h4>Gallery Images</h4>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px">
+            Add images by uploading files in the Media Library or pasting external image URLs. Choose a layout type for each.
+          </p>
+          <div class="item-list" id="galleryList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addGalleryItem()">+ Add Gallery Image</button>
+        </div>
+      </div>
+
+      <!-- ===== VIDEOS SECTION ===== -->
+      <div class="section-panel" id="panel-videos">
+        <div class="card">
+          <h4>Featured Video</h4>
+          <div class="field">
+            <label>YouTube Video ID</label>
+            <input type="text" data-bind="videos.featured.videoId" />
+            <p class="help">The ID from the YouTube URL. E.g. for youtube.com/watch?v=<strong>dQw4w9WgXcQ</strong>, enter <strong>dQw4w9WgXcQ</strong></p>
+          </div>
+          <div class="field">
+            <label>Title</label>
+            <input type="text" data-bind="videos.featured.title" />
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea data-bind="videos.featured.description"></textarea>
+          </div>
+          <div class="field">
+            <label>Eyebrow Text</label>
+            <input type="text" data-bind="videos.featured.eyebrow" />
+          </div>
+        </div>
+        <div class="card">
+          <h4>Highlight Videos</h4>
+          <div class="item-list" id="highlightList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addHighlight()">+ Add Highlight</button>
+        </div>
+      </div>
+
+      <!-- ===== SCHOOL SECTION ===== -->
+      <div class="section-panel" id="panel-school">
+        <div class="card">
+          <h4>School Introduction</h4>
+          <div class="field">
+            <label>Heading</label>
+            <input type="text" data-bind="school.heading" />
+          </div>
+          <div class="field">
+            <label>Paragraph 1</label>
+            <textarea data-bind="school.paragraph1"></textarea>
+          </div>
+          <div class="field">
+            <label>Paragraph 2</label>
+            <textarea data-bind="school.paragraph2"></textarea>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Values</h4>
+          <div class="item-list" id="valuesList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addValue()">+ Add Value</button>
+        </div>
+        <div class="card">
+          <h4>Facts</h4>
+          <div class="item-list" id="factsList"></div>
+          <button class="btn btn-outline btn-sm" onclick="addFact()">+ Add Fact</button>
+        </div>
+      </div>
+
+      <!-- ===== FOOTER SECTION ===== -->
+      <div class="section-panel" id="panel-footer">
+        <div class="card">
+          <h4>Footer</h4>
+          <div class="field">
+            <label>Title</label>
+            <input type="text" data-bind="footer.title" />
+          </div>
+          <div class="field">
+            <label>Subtitle</label>
+            <input type="text" data-bind="footer.subtitle" />
+          </div>
+          <div class="field">
+            <label>Copyright</label>
+            <input type="text" data-bind="footer.copyright" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MEDIA LIBRARY ===== -->
+      <div class="section-panel" id="panel-media">
+        <div class="card">
+          <h4>Upload Image</h4>
+          <div id="uploadZone" class="upload-zone">
+            <p>📁 Drag & drop an image here, or click to browse</p>
+            <p style="font-size:11px">Max 2 MB · JPEG, PNG, GIF, WebP, SVG</p>
+            <input type="file" id="fileInput" accept="image/*" style="display:none" />
+          </div>
+        </div>
+        <div class="card">
+          <h4>Uploaded Images</h4>
+          <div class="media-grid" id="mediaGrid"></div>
+          <p id="mediaEmpty" style="color:var(--text-muted);font-size:13px">No images uploaded yet.</p>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main -->
+</div><!-- /admin-layout -->
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* ================================================
+   CMS Admin Panel — Client-Side Logic
+================================================ */
+
+// ---- State ----
+let siteContent = null;
+const defaultContent = {
+  hero: { presents: 'Carolina Friends School Presents', dates: 'April 25 – 27, 2025', venue: 'CFS Main Stage', time: '7:00 PM' },
+  quote: { text: "We're all in this together.", attribution: '— East High School, & Carolina Friends School' },
+  cast: [
+    { id: '1', character: 'Troy Bolton', actor: 'Alex Rivera', description: 'The basketball captain who discovers an unexpected love for singing and must choose between two worlds.', role: 'Lead', hue: 220 },
+    { id: '2', character: 'Gabriella Montez', actor: 'Sofia Chen', description: 'The brilliant new girl whose voice and heart captivate an entire school.', role: 'Lead', hue: 340 },
+    { id: '3', character: 'Sharpay Evans', actor: 'Sasha Marks', description: 'The drama queen who will stop at nothing to claim the spotlight as her own.', role: 'Supporting', hue: 45 },
+    { id: '4', character: 'Ryan Evans', actor: 'Kalindi Hess', description: "Sharpay's twin and choreographer extraordinaire with hidden depths.", role: 'Supporting', hue: 160 },
+    { id: '5', character: 'Chad Danforth', actor: 'Marcus Williams', description: "Troy's fiercely loyal best friend who believes basketball is the only game worth playing — until it isn't.", role: 'Supporting', hue: 30 },
+    { id: '6', character: 'Taylor McKessie', actor: 'Celia', description: 'The academic team captain who warms up to the idea of breaking the status quo.', role: 'Supporting', hue: 10 },
+    { id: '7', character: 'Kelsi Nielsen', actor: 'Emma Torres', description: 'The shy but talented pianist and composer behind every song, finally finding her voice.', role: 'Supporting', hue: 260 },
+    { id: '8', character: 'Zeke Baylor', actor: 'Alula', description: "Troy's best friend on the team whose passion for baking surprises everyone.", role: 'Ensemble', hue: 280 },
+    { id: '9', character: 'Ms. Darbus', actor: 'Lily Nguyen', description: "East High's formidable drama teacher, uncompromising director, and unexpected champion of the arts.", role: 'Supporting', hue: 280 },
+    { id: '10', character: 'Coach Bolton', actor: 'Devon Harris', description: "Troy's dad, head basketball coach, and a man slowly learning that winning isn't everything.", role: 'Supporting', hue: 200 },
+  ],
+  crew: [
+    { id: '1', role: 'Director', name: 'Ms. Sarah Whitmore' },
+    { id: '2', role: 'Musical Director', name: 'Mr. James Okafor' },
+    { id: '3', role: 'Choreographer', name: 'Ms. Dana Kim' },
+    { id: '4', role: 'Stage Manager', name: 'Priya Sharma' },
+    { id: '5', role: 'Set Design', name: 'CFS Art Department' },
+    { id: '6', role: 'Costume Design', name: 'Ms. Rebecca Lowe' },
+    { id: '7', role: 'Lighting Design', name: 'Tyler Osei' },
+    { id: '8', role: 'Sound Engineer', name: 'Chris Patel' },
+  ],
+  show: {
+    performances: [
+      { id: '1', month: 'APR', day: '25', weekday: 'FRI', time: '7:00 PM', note: 'Opening Night' },
+      { id: '2', month: 'APR', day: '26', weekday: 'SAT', time: '7:00 PM', note: 'Saturday Evening' },
+      { id: '3', month: 'APR', day: '27', weekday: 'SUN', time: '2:00 PM', note: 'Closing Matinee' },
+    ],
+    venue: { name: 'CFS PAC', address: '4809 Friends School Rd, Durham, NC' },
+    pricing: [
+      { id: '1', label: 'General Admission', amount: 'Free', highlight: true },
+      { id: '2', label: 'Suggested Donation', amount: '$10–$20', highlight: false },
+    ],
+    rsvpOptions: [
+      { id: '1', value: 'apr25', label: 'Apr 25 — Opening Night' },
+      { id: '2', value: 'apr26', label: 'Apr 26 — Saturday Evening' },
+      { id: '3', value: 'apr27', label: 'Apr 27 — Closing Matinee' },
+    ],
+    note: 'Doors open 30 min before showtime. Arrive early for best seating.',
+  },
+  gallery: [
+    { id: '1', caption: "Centre Stage — Troy's Spotlight Moment", imageUrl: '', layout: 'tall' },
+    { id: '2', caption: 'Troy & Gabriella — Act I Rehearsal', imageUrl: '', layout: 'normal' },
+    { id: '3', caption: "Sharpay's Showstopping Audition", imageUrl: '', layout: 'normal' },
+    { id: '4', caption: 'The Full Company — Curtain Call', imageUrl: '', layout: 'wide' },
+    { id: '5', caption: "Choreography — We're All in This Together", imageUrl: '', layout: 'normal' },
+    { id: '6', caption: 'Backstage — Ready for Showtime', imageUrl: '', layout: 'normal' },
+    { id: '7', caption: 'Ms. Darbus Reviews Act II', imageUrl: '', layout: 'normal' },
+  ],
+  videos: {
+    featured: { videoId: 'VIDEO_ID_HERE', title: 'Full Performance — April 25, 2025', description: 'Watch the full opening night performance from the CFS Performing Arts Center. Clips from all three nights will be posted here after the production closes.', eyebrow: 'Featured' },
+    highlights: [
+      { id: '1', videoId: 'VIDEO_ID_HERE', title: '"Start of Something New" — Opening Number', duration: '3:42' },
+      { id: '2', videoId: 'VIDEO_ID_HERE', title: '"Bop to the Top" — Sharpay & Ryan', duration: '4:18' },
+      { id: '3', videoId: 'VIDEO_ID_HERE', title: '"We\'re All in This Together" — Finale', duration: '6:05' },
+    ],
+  },
+  school: {
+    heading: 'A Community Built on Friendship & Courage',
+    paragraph1: 'Carolina Friends School is a Quaker independent school in Durham, NC. Founded in 1962, CFS provides a PreK–12 education grounded in the belief that there is "that of God" in every person — that each child holds inherent worth and potential.',
+    paragraph2: 'Our performing arts program invites students to find their authentic voices on stage and in life. High School Musical is a celebration of everything this community stands for: courage, genuine connection, and the joy of showing up fully as yourself.',
+    values: [
+      { id: '1', title: 'Community', description: "Everyone belongs here. We build a school family that celebrates each person's unique gifts and encourages genuine connection across differences." },
+      { id: '2', title: 'Integrity', description: 'We speak truth and act with honesty — on stage, in class, and in all of life. Authenticity and trust are at the core of who we are.' },
+      { id: '3', title: 'Creativity', description: 'The arts are essential to learning at CFS. We believe imagination and expression are as vital as any academic pursuit — not an add-on but a foundation.' },
+      { id: '4', title: 'Equality', description: 'Every voice deserves to be heard. We are deeply committed to equity, inclusion, and genuine respect for every member of our community.' },
+    ],
+    facts: [
+      { id: '1', value: '1962', label: 'Founded' },
+      { id: '2', value: '600+', label: 'Students' },
+      { id: '3', value: 'PK–12', label: 'Grade Range' },
+      { id: '4', value: 'Durham', label: 'North Carolina' },
+    ],
+  },
+  footer: {
+    title: 'HIGH SCHOOL MUSICAL',
+    subtitle: 'Carolina Friends School · Durham, NC',
+    copyright: '© 2025 Carolina Friends School · All rights reserved',
+  },
+};
+
+// ---- Auth ----
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/auth', { credentials: 'same-origin' });
+    const data = await res.json();
+    if (data.authenticated) {
+      showDashboard();
+      await loadContent();
+    } else {
+      showLogin();
+    }
+  } catch {
+    showLogin();
+  }
+}
+
+async function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+
+  if (!user || !pass) { errEl.textContent = 'Please enter both fields.'; errEl.style.display = 'block'; return; }
+
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify({ username: user, password: pass }),
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      showDashboard();
+      await loadContent();
+    } else {
+      errEl.textContent = data.error || 'Login failed.';
+      errEl.style.display = 'block';
+    }
+  } catch {
+    errEl.textContent = 'Network error. Try again.';
+    errEl.style.display = 'block';
+  }
+}
+
+async function doLogout() {
+  await fetch('/api/auth', { method: 'DELETE', credentials: 'same-origin' });
+  showLogin();
+}
+
+function showLogin() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminDashboard').style.display = 'none';
+}
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminDashboard').style.display = 'flex';
+}
+
+// ---- Content Loading ----
+async function loadContent() {
+  try {
+    const res = await fetch('/api/content', { credentials: 'same-origin' });
+    const data = await res.json();
+    siteContent = data.exists ? data.data : JSON.parse(JSON.stringify(defaultContent));
+    populateFields();
+    renderDynamicLists();
+  } catch {
+    siteContent = JSON.parse(JSON.stringify(defaultContent));
+    populateFields();
+    renderDynamicLists();
+  }
+}
+
+function populateFields() {
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const path = el.dataset.bind;
+    const val = getNestedValue(siteContent, path);
+    if (val !== undefined) {
+      if (el.tagName === 'TEXTAREA') el.value = val;
+      else if (el.tagName === 'INPUT') el.value = val;
+      else if (el.tagName === 'SELECT') el.value = val;
+    }
+  });
+}
+
+function collectFields() {
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const path = el.dataset.bind;
+    let val;
+    if (el.type === 'checkbox') val = el.checked;
+    else val = el.value;
+    setNestedValue(siteContent, path, val);
+  });
+}
+
+// ---- Save ----
+async function saveAll() {
+  collectFields();
+  collectDynamicLists();
+  const status = document.getElementById('saveStatus');
+  status.textContent = 'Saving…';
+
+  try {
+    const res = await fetch('/api/content', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(siteContent),
+    });
+    if (res.ok) {
+      showToast('Changes saved!', 'success');
+      status.textContent = 'Saved';
+      setTimeout(() => status.textContent = '', 3000);
+    } else {
+      const data = await res.json();
+      showToast(data.error || 'Save failed', 'error');
+      status.textContent = 'Error';
+    }
+  } catch {
+    showToast('Network error', 'error');
+    status.textContent = 'Error';
+  }
+}
+
+// ---- Dynamic List Rendering ----
+function renderDynamicLists() {
+  renderCast();
+  renderCrew();
+  renderPerformances();
+  renderPricing();
+  renderRsvpOptions();
+  renderGallery();
+  renderHighlights();
+  renderValues();
+  renderFacts();
+  loadMedia();
+}
+
+function collectDynamicLists() {
+  collectListFromDOM('castList', 'cast', ['character', 'actor', 'description', 'role', 'hue']);
+  collectListFromDOM('crewList', 'crew', ['role', 'name']);
+  collectListFromDOM('performanceList', 'show.performances', ['month', 'day', 'weekday', 'time', 'note']);
+  collectListFromDOM('pricingList', 'show.pricing', ['label', 'amount', 'highlight']);
+  collectListFromDOM('rsvpList', 'show.rsvpOptions', ['value', 'label']);
+  collectListFromDOM('galleryList', 'gallery', ['caption', 'imageUrl', 'layout']);
+  collectListFromDOM('highlightList', 'videos.highlights', ['videoId', 'title', 'duration']);
+  collectListFromDOM('valuesList', 'school.values', ['title', 'description']);
+  collectListFromDOM('factsList', 'school.facts', ['value', 'label']);
+}
+
+function collectListFromDOM(containerId, path, fields) {
+  const container = document.getElementById(containerId);
+  const items = [];
+  container.querySelectorAll('.item-entry').forEach((entry, i) => {
+    const item = { id: String(i + 1) };
+    fields.forEach(f => {
+      const input = entry.querySelector(`[data-field="${f}"]`);
+      if (!input) return;
+      if (input.type === 'checkbox') item[f] = input.checked;
+      else if (input.type === 'number') item[f] = parseInt(input.value, 10) || 0;
+      else item[f] = input.value;
+    });
+    items.push(item);
+  });
+  setNestedValue(siteContent, path, items);
+}
+
+// --- Cast ---
+function renderCast() {
+  const list = document.getElementById('castList');
+  list.innerHTML = '';
+  (siteContent.cast || []).forEach((c, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(c.character || 'New Character')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removeCast(${i})">Remove</button></div>
+      </div>
+      <div class="card-row">
+        <div class="field"><label>Character Name</label><input type="text" data-field="character" value="${escAttr(c.character)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+        <div class="field"><label>Actor Name</label><input type="text" data-field="actor" value="${escAttr(c.actor)}" /></div>
+      </div>
+      <div class="field"><label>Description</label><textarea data-field="description">${escHtml(c.description)}</textarea></div>
+      <div class="card-row">
+        <div class="field"><label>Role Tag (Lead / Supporting)</label><input type="text" data-field="role" value="${escAttr(c.role)}" /></div>
+        <div class="field"><label>Color Hue (0-360)</label><input type="number" data-field="hue" value="${c.hue || 200}" min="0" max="360" /></div>
+      </div>
+    </div>`;
+  });
+}
+function addCastMember() { siteContent.cast.push({ id: String(Date.now()), character: '', actor: '', description: '', role: 'Supporting', hue: Math.floor(Math.random()*360) }); renderCast(); }
+function removeCast(i) { siteContent.cast.splice(i, 1); renderCast(); }
+
+// --- Crew ---
+function renderCrew() {
+  const list = document.getElementById('crewList');
+  list.innerHTML = '';
+  (siteContent.crew || []).forEach((c, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(c.role || 'New Role')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removeCrew(${i})">Remove</button></div>
+      </div>
+      <div class="card-row">
+        <div class="field"><label>Role Title</label><input type="text" data-field="role" value="${escAttr(c.role)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+        <div class="field"><label>Person Name</label><input type="text" data-field="name" value="${escAttr(c.name)}" /></div>
+      </div>
+    </div>`;
+  });
+}
+function addCrewMember() { siteContent.crew.push({ id: String(Date.now()), role: '', name: '' }); renderCrew(); }
+function removeCrew(i) { siteContent.crew.splice(i, 1); renderCrew(); }
+
+// --- Performances ---
+function renderPerformances() {
+  const list = document.getElementById('performanceList');
+  list.innerHTML = '';
+  (siteContent.show.performances || []).forEach((p, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(p.note || 'Performance')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removePerformance(${i})">Remove</button></div>
+      </div>
+      <div class="card-row">
+        <div class="field"><label>Month (e.g. APR)</label><input type="text" data-field="month" value="${escAttr(p.month)}" /></div>
+        <div class="field"><label>Day (e.g. 25)</label><input type="text" data-field="day" value="${escAttr(p.day)}" /></div>
+      </div>
+      <div class="card-row">
+        <div class="field"><label>Weekday (e.g. FRI)</label><input type="text" data-field="weekday" value="${escAttr(p.weekday)}" /></div>
+        <div class="field"><label>Time</label><input type="text" data-field="time" value="${escAttr(p.time)}" /></div>
+      </div>
+      <div class="field"><label>Note (e.g. Opening Night)</label><input type="text" data-field="note" value="${escAttr(p.note)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+    </div>`;
+  });
+}
+function addPerformance() { siteContent.show.performances.push({ id: String(Date.now()), month: '', day: '', weekday: '', time: '', note: '' }); renderPerformances(); }
+function removePerformance(i) { siteContent.show.performances.splice(i, 1); renderPerformances(); }
+
+// --- Pricing ---
+function renderPricing() {
+  const list = document.getElementById('pricingList');
+  list.innerHTML = '';
+  (siteContent.show.pricing || []).forEach((p, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(p.label || 'Price Tier')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removePricing(${i})">Remove</button></div>
+      </div>
+      <div class="card-row">
+        <div class="field"><label>Label</label><input type="text" data-field="label" value="${escAttr(p.label)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+        <div class="field"><label>Amount</label><input type="text" data-field="amount" value="${escAttr(p.amount)}" /></div>
+      </div>
+      <div class="field"><label><input type="checkbox" data-field="highlight" ${p.highlight ? 'checked' : ''} /> Highlight this tier</label></div>
+    </div>`;
+  });
+}
+function addPricing() { siteContent.show.pricing.push({ id: String(Date.now()), label: '', amount: '', highlight: false }); renderPricing(); }
+function removePricing(i) { siteContent.show.pricing.splice(i, 1); renderPricing(); }
+
+// --- RSVP Options ---
+function renderRsvpOptions() {
+  const list = document.getElementById('rsvpList');
+  list.innerHTML = '';
+  (siteContent.show.rsvpOptions || []).forEach((r, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(r.label || 'Option')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removeRsvpOption(${i})">Remove</button></div>
+      </div>
+      <div class="card-row">
+        <div class="field"><label>Value (e.g. apr25)</label><input type="text" data-field="value" value="${escAttr(r.value)}" /></div>
+        <div class="field"><label>Display Label</label><input type="text" data-field="label" value="${escAttr(r.label)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+      </div>
+    </div>`;
+  });
+}
+function addRsvpOption() { siteContent.show.rsvpOptions.push({ id: String(Date.now()), value: '', label: '' }); renderRsvpOptions(); }
+function removeRsvpOption(i) { siteContent.show.rsvpOptions.splice(i, 1); renderRsvpOptions(); }
+
+// --- Gallery ---
+function renderGallery() {
+  const list = document.getElementById('galleryList');
+  list.innerHTML = '';
+  (siteContent.gallery || []).forEach((g, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(g.caption || 'Gallery Image')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removeGalleryItem(${i})">Remove</button></div>
+      </div>
+      <div class="field"><label>Caption</label><input type="text" data-field="caption" value="${escAttr(g.caption)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+      <div class="field"><label>Image URL</label><input type="text" data-field="imageUrl" value="${escAttr(g.imageUrl)}" />
+        <p class="help">Paste an image URL or upload in Media Library then paste the /api/media/... URL here</p></div>
+      <div class="field"><label>Layout</label>
+        <select data-field="layout">
+          <option value="normal" ${g.layout==='normal'?'selected':''}>Normal</option>
+          <option value="tall" ${g.layout==='tall'?'selected':''}>Tall (spans 2 rows)</option>
+          <option value="wide" ${g.layout==='wide'?'selected':''}>Wide (spans 2 columns)</option>
+        </select>
+      </div>
+      ${g.imageUrl ? `<div style="margin-top:8px"><img src="${escAttr(g.imageUrl)}" style="max-height:120px;border:1px solid var(--border)" /></div>` : ''}
+    </div>`;
+  });
+}
+function addGalleryItem() { siteContent.gallery.push({ id: String(Date.now()), caption: '', imageUrl: '', layout: 'normal' }); renderGallery(); }
+function removeGalleryItem(i) { siteContent.gallery.splice(i, 1); renderGallery(); }
+
+// --- Highlights ---
+function renderHighlights() {
+  const list = document.getElementById('highlightList');
+  list.innerHTML = '';
+  (siteContent.videos.highlights || []).forEach((h, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(h.title || 'Highlight')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removeHighlight(${i})">Remove</button></div>
+      </div>
+      <div class="field"><label>YouTube Video ID</label><input type="text" data-field="videoId" value="${escAttr(h.videoId)}" /></div>
+      <div class="field"><label>Title</label><input type="text" data-field="title" value="${escAttr(h.title)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+      <div class="field"><label>Duration (e.g. 3:42)</label><input type="text" data-field="duration" value="${escAttr(h.duration)}" /></div>
+    </div>`;
+  });
+}
+function addHighlight() { siteContent.videos.highlights.push({ id: String(Date.now()), videoId: '', title: '', duration: '' }); renderHighlights(); }
+function removeHighlight(i) { siteContent.videos.highlights.splice(i, 1); renderHighlights(); }
+
+// --- Values ---
+function renderValues() {
+  const list = document.getElementById('valuesList');
+  list.innerHTML = '';
+  (siteContent.school.values || []).forEach((v, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(v.title || 'Value')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removeValue(${i})">Remove</button></div>
+      </div>
+      <div class="field"><label>Title</label><input type="text" data-field="title" value="${escAttr(v.title)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+      <div class="field"><label>Description</label><textarea data-field="description">${escHtml(v.description)}</textarea></div>
+    </div>`;
+  });
+}
+function addValue() { siteContent.school.values.push({ id: String(Date.now()), title: '', description: '' }); renderValues(); }
+function removeValue(i) { siteContent.school.values.splice(i, 1); renderValues(); }
+
+// --- Facts ---
+function renderFacts() {
+  const list = document.getElementById('factsList');
+  list.innerHTML = '';
+  (siteContent.school.facts || []).forEach((f, i) => {
+    list.innerHTML += `<div class="item-entry">
+      <div class="item-header"><strong>${escHtml(f.label || 'Fact')}</strong>
+        <div class="item-actions"><button class="btn btn-danger btn-sm" onclick="removeFact(${i})">Remove</button></div>
+      </div>
+      <div class="card-row">
+        <div class="field"><label>Value (e.g. 1962)</label><input type="text" data-field="value" value="${escAttr(f.value)}" /></div>
+        <div class="field"><label>Label (e.g. Founded)</label><input type="text" data-field="label" value="${escAttr(f.label)}" oninput="this.closest('.item-entry').querySelector('strong').textContent=this.value" /></div>
+      </div>
+    </div>`;
+  });
+}
+function addFact() { siteContent.school.facts.push({ id: String(Date.now()), value: '', label: '' }); renderFacts(); }
+function removeFact(i) { siteContent.school.facts.splice(i, 1); renderFacts(); }
+
+// ---- Media Library ----
+async function loadMedia() {
+  try {
+    const res = await fetch('/api/media', { credentials: 'same-origin' });
+    const data = await res.json();
+    const grid = document.getElementById('mediaGrid');
+    const empty = document.getElementById('mediaEmpty');
+    if (!data.items || data.items.length === 0) {
+      grid.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    grid.innerHTML = data.items.map(item => {
+      const src = item.type === 'external' ? item.url : `/api/media/${item.id}`;
+      return `<div class="media-item" title="${escAttr(item.name)}">
+        <img src="${escAttr(src)}" alt="${escAttr(item.name)}" loading="lazy" />
+        <div class="media-name">${escHtml(item.name)}</div>
+        <div class="media-overlay">
+          <button class="btn btn-sm btn-gold" onclick="copyMediaUrl('${escAttr(src)}')">Copy URL</button>
+          <button class="btn btn-sm btn-danger" style="margin-left:4px" onclick="deleteMedia('${escAttr(item.id)}')">Delete</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch {
+    /* ignore */
+  }
+}
+
+function copyMediaUrl(url) {
+  navigator.clipboard.writeText(url).then(() => showToast('URL copied!', 'success'));
+}
+
+async function deleteMedia(id) {
+  if (!confirm('Delete this image?')) return;
+  await fetch('/api/media/' + id, { method: 'DELETE', credentials: 'same-origin' });
+  showToast('Image deleted', 'success');
+  loadMedia();
+}
+
+// File upload
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+
+if (uploadZone) {
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) uploadFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) uploadFile(fileInput.files[0]); });
+}
+
+async function uploadFile(file) {
+  if (file.size > 2 * 1024 * 1024) { showToast('File too large (max 2MB)', 'error'); return; }
+  const formData = new FormData();
+  formData.append('file', file);
+  showToast('Uploading…');
+  try {
+    const res = await fetch('/api/media', { method: 'POST', credentials: 'same-origin', body: formData });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Uploaded! URL: ' + data.url, 'success');
+      loadMedia();
+    } else {
+      showToast(data.error || 'Upload failed', 'error');
+    }
+  } catch {
+    showToast('Upload error', 'error');
+  }
+}
+
+// ---- Sidebar Navigation ----
+document.querySelectorAll('#sidebarNav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    collectFields();
+    collectDynamicLists();
+
+    document.querySelectorAll('#sidebarNav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById('panel-' + btn.dataset.section);
+    if (panel) panel.classList.add('active');
+    document.getElementById('sectionTitle').textContent = btn.textContent.trim();
+  });
+});
+
+// ---- Enter key login ----
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
+
+// ---- Utility ----
+function getNestedValue(obj, path) {
+  return path.split('.').reduce((o, k) => (o && o[k] !== undefined ? o[k] : undefined), obj);
+}
+
+function setNestedValue(obj, path, value) {
+  const keys = path.split('.');
+  const last = keys.pop();
+  const target = keys.reduce((o, k) => {
+    if (!o[k]) o[k] = {};
+    return o[k];
+  }, obj);
+  target[last] = value;
+}
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+function escAttr(s) { return (s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ---- Init ----
+checkAuth();
+</script>
+</body>
+</html>
