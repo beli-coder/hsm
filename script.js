@@ -103,6 +103,28 @@ function showToast(message, type) {
   setTimeout(() => toast.remove(), 3000);
 }
 
+// ---- RSVP Form ----
+function handleRsvp() {
+  var name  = (document.getElementById('ticket-name')  || {}).value || '';
+  var email = (document.getElementById('ticket-email') || {}).value || '';
+  var date  = (document.getElementById('ticket-date')  || {}).value || '';
+  if (!name.trim() || !email.trim() || !date) {
+    showToast('Please fill in all fields.', 'error');
+    return;
+  }
+  showToast('Reserved for ' + name.trim() + '! We\u2019ll be in touch. \uD83C\uDFAD', 'success');
+}
+
+// ---- Video player ----
+// Replace VIDEO_ID_HERE in the src attrs (index.html) with the real YouTube video ID.
+// Clicking a highlight thumbnail swaps the main player to that video.
+function playVideo(videoId) {
+  var frame = document.getElementById('mainVideoFrame');
+  if (!frame || videoId === 'VIDEO_ID_HERE') return;
+  frame.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&rel=0&modestbranding=1';
+  frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ---- Intersection Observer for Animations ----
 var observer = new IntersectionObserver(function(entries) {
   entries.forEach(function(entry) {
